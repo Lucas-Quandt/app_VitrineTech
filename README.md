@@ -25,18 +25,22 @@ O projeto foi construído em etapas evolutivas:
         <th align="center">Vitrine</th>
         <th align="center">Detalhes do Produto</th>
         <th align="center">Meu Carrinho</th>
+        <th align="center">Pedido Finalizado</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td align="center">
-          <img src="COLE_AQUI_LINK_DA_VITRINE" alt="Tela da Vitrine" width="250" />
+          <img src="./Vitrine.png" alt="Tela da Vitrine" width="190" />
         </td>
         <td align="center">
-          <img src="COLE_AQUI_LINK_DOS_DETALHES" alt="Tela de Detalhes do Produto" width="250" />
+          <img src="./Detalhes.png" alt="Tela de Detalhes do Produto" width="190" />
         </td>
         <td align="center">
-          <img src="COLE_AQUI_LINK_DO_CARRINHO" alt="Tela do Carrinho" width="250" />
+          <img src="./Carrinho.png" alt="Tela do Carrinho" width="190" />
+        </td>
+        <td align="center">
+          <img src="./Finalizado.png" alt="Tela de Pedido Finalizado" width="190" />
         </td>
       </tr>
     </tbody>

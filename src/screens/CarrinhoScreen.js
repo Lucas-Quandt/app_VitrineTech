@@ -23,6 +23,21 @@ export default function CarrinhoScreen({
     0
   );
 
+  function confirmarEsvaziarCarrinho() {
+    Alert.alert(
+      'Esvaziar Carrinho',
+      'Deseja remover todos os produtos salvos no seu carrinho?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Esvaziar',
+          style: 'destructive',
+          onPress: () => onLimparCarrinho(),
+        },
+      ]
+    );
+  }
+
   function finalizarPedido() {
     const quantidade = carrinho.length;
     const totalFormatado = valorTotal.toFixed(2);
@@ -123,9 +138,18 @@ export default function CarrinhoScreen({
         )}
       />
 
-      {/* Rodapé com botão de Finalizar Pedido quando houver itens */}
+      {/* Rodapé com botões de Esvaziar e Finalizar Pedido quando houver itens */}
       {carrinho.length > 0 && (
         <View style={styles.rodapePedido}>
+          <TouchableOpacity
+            style={styles.botaoEsvaziar}
+            onPress={confirmarEsvaziarCarrinho}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="trash-bin-outline" size={18} color="#DC2626" />
+            <Text style={styles.textoBotaoEsvaziar}>Esvaziar</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.botaoFinalizar}
             onPress={finalizarPedido}
@@ -313,23 +337,45 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   rodapePedido: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     backgroundColor: '#FFFFFF',
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: '#E2E8F0',
   },
+  botaoEsvaziar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    paddingVertical: 15,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    gap: 6,
+  },
+  textoBotaoEsvaziar: {
+    color: '#DC2626',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
   botaoFinalizar: {
+    flex: 1,
     backgroundColor: '#059669',
     paddingVertical: 15,
+    paddingHorizontal: 12,
     borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   textoBotaoFinalizar: {
     color: '#FFFFFF',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
   },
 });

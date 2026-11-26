@@ -1,5 +1,7 @@
-// Arquivo: App.js
-import React, { useState } from 'react';
+// Arquivo: App.js (VitrineTech - Bottom Tabs + Stack Navigator + AsyncStorage)
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -11,6 +13,9 @@ import CarrinhoScreen from './src/screens/CarrinhoScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+// Chave única de armazenamento local do carrinho no dispositivo
+const CHAVE_CARRINHO = '@vitrine_tech:carrinho';
 
 // Pilha interna da aba Vitrine (Lista de Produtos -> Detalhes do Produto)
 function VitrineStack({ carrinho, onToggleCarrinho }) {
@@ -46,6 +51,47 @@ function VitrineStack({ carrinho, onToggleCarrinho }) {
 export default function App() {
   // Estado compartilhado do carrinho (array de objetos completos de produto)
   const [carrinho, setCarrinho] = useState([]);
+  const [dadosCarregados, setDadosCarregados] = useState(false);
+
+  // 1. Leitura inicial segura ao abrir o aplicativo
+  useEffect(() => {
+    async function restaurarCarrinho() {
+      try {
+        const jsonSalvo = await AsyncStorage.getItem(CHAVE_CARRINHO);
+        if (jsonSalvo !== null) {
+          const itensRecuperados = JSON.parse(jsonSalvo);
+          if (Array.isArray(itensRecuperados)) {
+            setCarrinho(itensRecuperados);
+          }
+        }
+      } catch (erro) {
+        console.log('Erro ao ler carrinho do AsyncStorage:', erro);
+      } finally {
+        setDadosCarregados(true);
+      }
+    }
+
+    restaurarCarrinho();
+  }, []);
+
+  // 2. Sincronização automática sempre que o carrinho for alterado após a carga inicial
+  useEffect(() => {
+    if (!dadosCarregados) return;
+
+    async function sincronizarStorage() {
+      try {
+        if (carrinho.length === 0) {
+          await AsyncStorage.removeItem(CHAVE_CARRINHO);
+        } else {
+          await AsyncStorage.setItem(CHAVE_CARRINHO, JSON.stringify(carrinho));
+        }
+      } catch (erro) {
+        console.log('Erro ao sincronizar carrinho no AsyncStorage:', erro);
+      }
+    }
+
+    sincronizarStorage();
+  }, [carrinho, dadosCarregados]);
 
   function alternarCarrinho(produto) {
     setCarrinho((listaAtual) => {
@@ -65,6 +111,15 @@ export default function App() {
 
   function limparCarrinho() {
     setCarrinho([]);
+  }
+
+  if (!dadosCarregados) {
+    return (
+      <View style={styles.telaCarregando}>
+        <ActivityIndicator size="large" color="#2563EB" />
+        <Text style={styles.textoCarregando}>Restaurando carrinho salvo...</Text>
+      </View>
+    );
   }
 
   return (
@@ -134,3 +189,17 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  telaCarregando: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+  },
+  textoCarregando: {
+    marginTop: 12,
+    fontSize: 15,
+    color: '#475569',
+  },
+});

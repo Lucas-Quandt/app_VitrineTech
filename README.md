@@ -12,6 +12,7 @@ O projeto foi construído em etapas evolutivas:
 
 1. **Navegação em Pilha (Stack Navigation) + API REST:** Listagem de produtos da Fake Store API com indicador de carregamento (`ActivityIndicator`), cards reutilizáveis (`ProdutoCard`) e passagem de parâmetros entre telas (`VitrineScreen` → `DetalhesProdutoScreen`).
 2. **Navegação por Abas Inferiores (Bottom Tabs) + Carrinho Compartilhado:** Adição de `Tab.Navigator` com ícones vetoriais (`Ionicons`), badge dinâmico com a quantidade de itens no carrinho, fallback local caso a API fique indisponível e tela completa de carrinho (`CarrinhoScreen`) com soma automática e finalização de pedido.
+3. **Persistência Local com AsyncStorage:** Gravação automática do carrinho na memória interna do dispositivo com a chave `'@vitrine_tech:carrinho'`, restauração segura na inicialização com `ActivityIndicator` e botão **Esvaziar** com confirmação via `Alert`.
 
 ---
 
@@ -35,7 +36,12 @@ O projeto foi construído em etapas evolutivas:
   - Card de resumo no topo com **quantidade de itens** e **Valor Total (`R$`)** calculado dinamicamente com `.reduce()`.
   - Lista de itens em `FlatList` com miniatura, categoria, título, preço, botão **Ver Detalhes** (navegação cruzada para `VitrineTab` → `DetalhesProduto`) e botão **Remover**.
   - Estado vazio amigável com ícone e botão **Ir para a Vitrine**.
-  - Botão **Finalizar Pedido** que limpa o carrinho e apresenta um `Alert` de confirmação com resumo da compra.
+  - Botão **Esvaziar** no rodapé (ao lado de **Finalizar Pedido**) com confirmação via `Alert` para remover todos os itens e limpar a chave salva no dispositivo.
+  - Botão **Finalizar Pedido** que limpa o carrinho (e remove a chave no `AsyncStorage`) e apresenta um `Alert` de confirmação com resumo da compra.
+- **Persistência Local (`AsyncStorage`):**
+  - Salva automaticamente os itens do carrinho sob a chave `'@vitrine_tech:carrinho'` usando `JSON.stringify`.
+  - Restaura os itens salvos na inicialização com `AsyncStorage.getItem` e `JSON.parse`, exibindo `ActivityIndicator` até a leitura concluir para evitar sobrescrita inicial.
+  - Remove a chave com `AsyncStorage.removeItem` sempre que o carrinho fica vazio (removendo o último item, esvaziar ou finalizar pedido).
 
 ---
 
@@ -46,6 +52,7 @@ O projeto foi construído em etapas evolutivas:
 | **React** | `18.3.1` | Biblioteca base de UI e hooks (`useState`, `useEffect`) |
 | **React Native** | `0.76.5` | Componentes nativos (`View`, `Text`, `FlatList`, `Image`, `ScrollView`, `TouchableOpacity`, `Alert`, `ActivityIndicator`) |
 | **Expo** | `~52.0.0` | Toolchain, Metro Bundler e execução via Expo Go |
+| **@react-native-async-storage/async-storage** | `1.23.1` | Persistência local do carrinho no dispositivo (`@vitrine_tech:carrinho`) |
 | **@react-navigation/native** | `^7.0.0` | Container e núcleo de navegação |
 | **@react-navigation/native-stack** | `^7.0.0` | Navegação em pilha (`Vitrine` → `DetalhesProduto`) |
 | **@react-navigation/bottom-tabs** | `^7.0.0` | Barra de abas inferiores (`VitrineTab` e `CarrinhoTab`) |
